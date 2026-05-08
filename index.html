@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎤 Karaoke ThreeSome Production!</title>
+  <title>🎤 Karaoke Menu Pizze</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -46,29 +46,57 @@
       margin-top: 4px;
     }
 
-    /* Filter tabs */
+    /* Instagram banner */
+    .insta-banner {
+      background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      padding: 18px 20px;
+      text-align: center;
+    }
+    .insta-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      color: #cc2366;
+      text-decoration: none;
+      border-radius: 50px;
+      padding: 13px 24px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.15rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      transition: transform .2s, box-shadow .2s;
+      width: 100%;
+      max-width: 400px;
+      justify-content: center;
+    }
+    .insta-link:hover, .insta-link:active { transform: scale(1.03); box-shadow: 0 6px 22px rgba(0,0,0,0.25); }
+    .insta-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .insta-text { display: flex; flex-direction: column; text-align: left; line-height: 1.2; }
+    .insta-main { font-size: 1.1rem; }
+    .insta-sub { font-size: 0.72rem; font-family: 'Nunito', sans-serif; font-weight: 700; color: #888; margin-top: 1px; }
+
+    /* Filter tabs — vertical stack */
     .tabs {
       display: flex;
+      flex-direction: column;
       gap: 8px;
       padding: 14px 16px;
-      overflow-x: auto;
       background: #FFF3E8;
       border-bottom: 2px solid #F0DCC8;
-      scrollbar-width: none;
     }
-    .tabs::-webkit-scrollbar { display: none; }
     .tab {
-      flex-shrink: 0;
-      padding: 7px 16px;
-      border-radius: 20px;
-      border: 2px solid transparent;
+      width: 100%;
+      padding: 12px 20px;
+      border-radius: 14px;
+      border: 2px solid #E8C9A8;
       background: white;
       font-family: 'Nunito', sans-serif;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 1rem;
       cursor: pointer;
       transition: all .2s;
       color: var(--text);
+      text-align: left;
     }
     .tab.active, .tab:hover { background: var(--red); color: white; border-color: var(--red); }
 
@@ -228,29 +256,25 @@
 <body>
 
 <header>
-  <h1>🎤 Karaoke</h1>
-  <p>Prima mangi, poi canti!</p>
-  <p>
-    <a href="https://www.instagram.com/threesome_prod/" target="_blank">
-    📸 Seguici su Instagram
-</a>
-  </p>
+  <h1>🎤 Karaoke Menu Pizze</h1>
+  <p>Scegli la pizza, canta la canzone!</p>
 </header>
-  
-<div class="tabs">
-  <button class="tab active" onclick="filterCat('all', this)">🍕 Tutte</button>
-  <button class="tab" onclick="filterCat('rossa', this)">🔴 Rosse</button>
-  <button class="tab" onclick="filterCat('bianca', this)">⚪ Bianche</button>
-  <button class="tab" onclick="filterCat('speciale', this)">⭐ Speciali</button>
+
+<div class="insta-banner">
+  <a class="insta-link" href="https://www.instagram.com/threesome_prod/" target="_blank">
+    <span class="insta-icon">📸</span>
+    <span class="insta-text">
+      <span class="insta-main">Seguici su Instagram</span>
+      <span class="insta-sub">@threesome_prod · eventi, storie & taggaci!</span>
+    </span>
+  </a>
+  <p style="color:white;font-size:0.78rem;margin-top:10px;opacity:0.9;font-weight:600;">📅 Pubblichiamo i prossimi eventi · 🎉 Guarda le storie della serata · ✨ Taggaci nei tuoi video!</p>
 </div>
 
-<div class="search-wrap">
-  <input type="text" id="search" placeholder="🔍 Cerca pizza o canzone..." oninput="doSearch(this.value)">
-</div>
+
 
 <div id="main-content"></div>
 
-<div class="no-results" id="no-results">😢 Nessun risultato trovato!</div>
 
 <div class="toast" id="toast"></div>
 
@@ -480,8 +504,7 @@ const emojis = {
   speciali: ["🎸","🐷","😤","🧀"]
 };
 const notes = ["🎵","🎶","🎸","🎤","🎹","🥁","🎺","🎻"];
-
-let currentCat = 'all';
+ 
 let currentSearch = '';
 
 function buildCards(category, items, catClass) {
@@ -524,7 +547,6 @@ function render() {
     { key: 'speciali', label: '⭐ Speciali', catClass: 'cat-speciale' },
   ];
   sections.forEach(sec => {
-    if (currentCat !== 'all' && currentCat !== sec.key) return;
     html += `<div class="section ${sec.catClass}" data-section="${sec.key}">`;
     html += `<div class="section-title">${sec.label}</div>`;
     html += `<div class="grid">`;
@@ -535,12 +557,6 @@ function render() {
   applySearch();
 }
 
-function filterCat(cat, btn) {
-  currentCat = cat;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  render();
-}
 
 function doSearch(val) {
   currentSearch = val.toLowerCase().trim();
