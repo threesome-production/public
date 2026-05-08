@@ -258,7 +258,7 @@
 <header>
   <h1>🎤 Karaoke Threesome Production</h1>
   <h3>Ecco alcuni consigli associati alla tua pizza preferita!</h3>
-  <h3>Se non trovi la tua canzone preferita non precoccuparti, la troviamo noi per te!</h3>
+  <h3>Se non trovi la tua canzone non precoccuparti, diccelo e la troviamo noi per te!</h3>
 </header>
 
 <div class="insta-banner">
@@ -515,7 +515,7 @@ function buildCards(category, items, catClass) {
     const emoji = emojiList[i % emojiList.length];
     const songs = pizza.songs.map((s, si) => {
       const note = notes[si % notes.length];
-      return `<div class="song-item" onclick="copySong('${escHtml(s.title)} - ${escHtml(s.artist)}')">
+      return `<div class="song-item">
         <span class="note">${note}</span>
         <span>${escHtml(s.title)}</span>
         <span class="artist">${escHtml(s.artist)}</span>
