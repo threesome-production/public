@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎤 Karaoke ThreeSome Production!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #E8302A;
+      --yellow: #F5C842;
+      --green: #2DB37A;
+      --blue: #3A8BCD;
+      --purple: #9B59B6;
+      --orange: #F07C2A;
+      --bg: #FFF9F0;
+      --card: #FFFFFF;
+      --text: #2C1A0E;
+      --muted: #8B6A50;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      background: var(--red);
+      color: white;
+      text-align: center;
+      padding: 28px 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(232,48,42,0.3);
+    }
+    header h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(1.8rem, 6vw, 2.8rem);
+      letter-spacing: 1px;
+    }
+    header p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    /* Filter tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      background: #FFF3E8;
+      border-bottom: 2px solid #F0DCC8;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      flex-shrink: 0;
+      padding: 7px 16px;
+      border-radius: 20px;
+      border: 2px solid transparent;
+      background: white;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all .2s;
+      color: var(--text);
+    }
+    .tab.active, .tab:hover { background: var(--red); color: white; border-color: var(--red); }
+
+    /* Search */
+    .search-wrap {
+      padding: 12px 16px;
+      background: #FFF3E8;
+    }
+    .search-wrap input {
+      width: 100%;
+      padding: 10px 16px;
+      border-radius: 24px;
+      border: 2px solid #E8C9A8;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      background: white;
+      color: var(--text);
+    }
+    .search-wrap input:focus { border-color: var(--red); }
+
+    /* Section headers */
+    .section-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.3rem;
+      padding: 20px 16px 8px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(to right, #E8C9A8, transparent);
+      border-radius: 2px;
+    }
+
+    /* Cards grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      padding: 0 16px 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      transition: transform .2s, box-shadow .2s;
+      border: 2px solid transparent;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+
+    .card-header {
+      padding: 16px 18px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .pizza-emoji {
+      font-size: 2.2rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .card-title-wrap {}
+    .pizza-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.25rem;
+      line-height: 1.1;
+    }
+    .pizza-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 3px;
+      font-style: italic;
+      line-height: 1.4;
+    }
+
+    .songs-list {
+      padding: 0 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .song-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      padding: 7px 10px;
+      border-radius: 10px;
+      background: var(--bg);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .song-item:hover { background: #F0DCC8; }
+    .song-item .note { font-size: 1rem; flex-shrink: 0; }
+    .song-item .artist { color: var(--muted); font-weight: 400; font-size: 0.8rem; margin-left: auto; flex-shrink: 0; }
+
+    /* Color accents per category */
+    .cat-rossa .card { border-color: #FFCCC8; }
+    .cat-rossa .card-header { background: linear-gradient(135deg, #FFF0EE, #FFE0DC); }
+    .cat-rossa .pizza-name { color: var(--red); }
+
+    .cat-bianca .card { border-color: #D8EAF8; }
+    .cat-bianca .card-header { background: linear-gradient(135deg, #EEF6FF, #DCF0FF); }
+    .cat-bianca .pizza-name { color: var(--blue); }
+
+    .cat-speciale .card { border-color: #D4F0E4; }
+    .cat-speciale .card-header { background: linear-gradient(135deg, #EEFAF4, #D4F0E4); }
+    .cat-speciale .pizza-name { color: var(--green); }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #2C1A0E;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 24px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      z-index: 999;
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+      white-space: nowrap;
+      max-width: 90vw;
+      text-align: center;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: 1.1rem;
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🎤 Karaoke</h1>
+  <p>Prima mangi, poi canti!</p>
+  <p>
+    <a href="https://www.instagram.com/threesome_prod/" target="_blank">
+    📸 Seguici su Instagram
+</a>
+  </p>
+</header>
+  
+<div class="tabs">
+  <button class="tab active" onclick="filterCat('all', this)">🍕 Tutte</button>
+  <button class="tab" onclick="filterCat('rossa', this)">🔴 Rosse</button>
+  <button class="tab" onclick="filterCat('bianca', this)">⚪ Bianche</button>
+  <button class="tab" onclick="filterCat('speciale', this)">⭐ Speciali</button>
+</div>
+
+<div class="search-wrap">
+  <input type="text" id="search" placeholder="🔍 Cerca pizza o canzone..." oninput="doSearch(this.value)">
+</div>
+
+<div id="main-content"></div>
+
+<div class="no-results" id="no-results">😢 Nessun risultato trovato!</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>Buon karaoke! 🎶</footer>
+
+<script>
+const data = {
+  rosse: [
+    {
+      name: "Aniello",
+      desc: "Fresca, giovane, un po' malinconica ma sempre cool.",
+      songs: [
+        { title: "La musica non c'è", artist: "Coez" },
+        { title: "Oroscopo", artist: "Calcutta" },
+        { title: "Giovani Wannabe", artist: "Pinguini Tattici Nucleari" },
+        { title: "Brividi", artist: "Blanco & Mahmood" },
+        { title: "Amore Disperato", artist: "Achille Lauro" },
+      ]
+    },
+    {
+      name: "Capricciosa",
+      desc: "Pizza un po' confusa, come i cuori spezzati dopo l'ultimo messaggio non letto.",
+      songs: [
+        { title: "Sally", artist: "Vasco Rossi" },
+        { title: "Vivo per lei", artist: "Bocelli & Giorgia" },
+        { title: "Sere Nere", artist: "Tiziano Ferro" },
+        { title: "Acqua e sale", artist: "Mina & Celentano" },
+        { title: "Angela", artist: "Checco Zalone" },
+      ]
+    },
+    {
+      name: "Burina",
+      desc: "Romanaccia doc, da taverna con vino e amici rumorosi.",
+      songs: [
+        { title: "Me so' mbriacato", artist: "Mannarino" },
+        { title: "Roma Capoccia", artist: "Antonello Venditti" },
+        { title: "Supercafone", artist: "Piotta" },
+        { title: "Mille giorni di te e di me", artist: "Claudio Baglioni" },
+        { title: "Noccioline", artist: "Carl Brave x Franco126" },
+      ]
+    },
+    {
+      name: "Diavola",
+      desc: "Piccante e rumorosa, da headbanging tra una fetta e l'altra.",
+      songs: [
+        { title: "Certe notti", artist: "Ligabue" },
+        { title: "El Diablo", artist: "Litfiba" },
+        { title: "Diavolo in me", artist: "Zucchero" },
+        { title: "Basket Case", artist: "Green Day" },
+        { title: "Highway to Hell", artist: "AC/DC" },
+      ]
+    },
+    {
+      name: "Napoli",
+      desc: "Calda, melodica, napoletana fino all'osso.",
+      songs: [
+        { title: "Non dirgli mai", artist: "Gigi D'Alessio" },
+        { title: "Napule è", artist: "Pino Daniele" },
+        { title: "Perdere l'amore", artist: "Massimo Ranieri" },
+        { title: "O' Surdato 'Nnammurato", artist: "Massimo Ranieri" },
+        { title: "Per sempre sì", artist: "Sal da Vinci" },
+      ]
+    },
+    {
+      name: "Margherita",
+      desc: "La regina del karaoke, tutti la sanno cantare, nessuno resta fermo.",
+      songs: [
+        { title: "Azzurro", artist: "Adriano Celentano" },
+        { title: "Sarà Perché Ti Amo", artist: "Ricchi e Poveri" },
+        { title: "Per dimenticare", artist: "Zero Assoluto" },
+        { title: "...Baby One More Time", artist: "Britney Spears" },
+        { title: "Wonderwall", artist: "Oasis" },
+      ]
+    },
+    {
+      name: "Marinara",
+      desc: "Fresca e poetica, come un tuffo tra le onde musicali.",
+      songs: [
+        { title: "Acqua Azzurra, acqua chiara", artist: "Lucio Battisti" },
+        { title: "Un'Estate Italiana – Notti Magiche", artist: "Nannini & Bennato" },
+        { title: "Sapore di sale", artist: "Gino Paoli" },
+        { title: "Il mare d'inverno", artist: "Loredana Bertè" },
+      ]
+    },
+    {
+      name: "Pomodoro",
+      desc: "Essenziale, facile da cantare, piace a tutti.",
+      songs: [
+        { title: "A te", artist: "Jovanotti" },
+        { title: "Sere nere", artist: "Tiziano Ferro" },
+        { title: "Vamos a bailar", artist: "Paola e Chiara" },
+        { title: "Vieni a ballare in Puglia", artist: "Caparezza" },
+        { title: "Rewind", artist: "Vasco Rossi" },
+      ]
+    },
+  ],
+  bianche: [
+    {
+      name: "Favolosa",
+      desc: "Pop brillante, felice e scintillante.",
+      songs: [
+        { title: "Esibizionista", artist: "Annalisa" },
+        { title: "Maracaibo", artist: "Lu Colombo" },
+        { title: "Toxic", artist: "Britney Spears" },
+        { title: "Wannabe", artist: "Spice Girls" },
+        { title: "I want it that way", artist: "Backstreet Boys" },
+      ]
+    },
+    {
+      name: "Demoralizzata",
+      desc: "Pizza malinconica, da piangere sul tavolo tra un morso e l'altro.",
+      songs: [
+        { title: "Ma che freddo fa", artist: "Nada" },
+        { title: "A chi mi dice", artist: "Blue" },
+        { title: "Non me lo so spiegare", artist: "Tiziano Ferro" },
+        { title: "Bohemian Rhapsody", artist: "Queen" },
+        { title: "Creep", artist: "Radiohead" },
+      ]
+    },
+    {
+      name: "Wurstel",
+      desc: "Allegrissima, ogni morso fa cantare anche il più piccino.",
+      songs: [
+        { title: "Occhi di gatto", artist: "Cristina D'Avena" },
+        { title: "Pollon", artist: "Cristina D'Avena" },
+        { title: "Dragon Ball", artist: "Giorgio Vanni" },
+        { title: "Il Cerchio della vita (Re Leone)", artist: "Ivana Spagna" },
+        { title: "Farò di te un uomo", artist: "Mulan" },
+      ]
+    },
+    {
+      name: "Primavera",
+      desc: "Dolce e leggera, come un primo fiore d'amore.",
+      songs: [
+        { title: "Come saprei", artist: "Giorgia" },
+        { title: "Il mio canto libero", artist: "Lucio Battisti" },
+        { title: "Non sono una signora", artist: "Loredana Bertè" },
+        { title: "Fiore di Maggio", artist: "Fabio Concato" },
+        { title: "Perfect", artist: "Ed Sheeran" },
+      ]
+    },
+    {
+      name: "Italia",
+      desc: "Orgoglio tricolore, radio-pop da cantare a squarciagola.",
+      songs: [
+        { title: "Pensieri e parole", artist: "Lucio Battisti" },
+        { title: "A mano a mano", artist: "Rino Gaetano" },
+        { title: "Azzurro", artist: "Adriano Celentano" },
+        { title: "Albachiara", artist: "Vasco Rossi" },
+        { title: "Maledetta Primavera", artist: "Loretta Goggi" },
+      ]
+    },
+    {
+      name: "Tonno e Cipolla",
+      desc: "Pizza complicata, da affrontare solo se sei coraggioso.",
+      songs: [
+        { title: "La sera dei miracoli", artist: "Lucio Dalla" },
+        { title: "Shallow", artist: "Lady Gaga & Bradley Cooper" },
+        { title: "Almeno tu nell'universo", artist: "Mia Martini" },
+        { title: "La solitudine", artist: "Laura Pausini" },
+        { title: "My Heart Will Go On", artist: "Celine Dion" },
+      ]
+    },
+    {
+      name: "Ortolana",
+      desc: "Fresca, leggera, country vibes tra verdure e chitarre acustiche.",
+      songs: [
+        { title: "Bocca di rosa", artist: "Fabrizio De André" },
+        { title: "Che coss'è l'amor", artist: "Vinicio Capossela" },
+        { title: "Il Cielo di Irlanda", artist: "Fiorella Mannoia" },
+        { title: "Take Me Home, Country Roads", artist: "John Denver" },
+        { title: "Ring of Fire", artist: "Johnny Cash" },
+      ]
+    },
+  ],
+  speciali: [
+    {
+      name: "La Bolognese",
+      desc: "Pop locale e raffinato, da Emilia pura.",
+      songs: [
+        { title: "50 Special", artist: "Lunapop" },
+        { title: "Ci vuole un fisico bestiale", artist: "Luca Carboni" },
+        { title: "La nuova stella di Broadway", artist: "Cesare Cremonini" },
+        { title: "Pedro", artist: "Raffaella Carrà" },
+        { title: "La terra dei cachi", artist: "Elio e le Storie Tese" },
+        { title: "Nord sud ovest est", artist: "883" },
+      ]
+    },
+    {
+      name: "Porky",
+      desc: "Gustosa, sexy e divertente, da cantare urlando.",
+      songs: [
+        { title: "L'importante è finire", artist: "Mina" },
+        { title: "Sesso e samba", artist: "Tony Effe & Gaia" },
+        { title: "Disperato erotico stomp", artist: "Lucio Dalla" },
+        { title: "Crazy in Love", artist: "Beyoncé" },
+        { title: "Like a Virgin", artist: "Madonna" },
+      ]
+    },
+    {
+      name: "Non puoi capi'",
+      desc: "Ribelle, ironica, da cantare da sola o con amici.",
+      songs: [
+        { title: "Rossetto e caffè", artist: "Sal Da Vinci" },
+        { title: "Non voglio mica la luna", artist: "Fiordaliso" },
+        { title: "Poker Face", artist: "Lady Gaga" },
+        { title: "We Will Rock You", artist: "Queen" },
+      ]
+    },
+    {
+      name: "Polentona",
+      desc: "Un abbraccio del Nord, calda e avvolgente come una canzone da cantare a squarciagola tra amici.",
+      songs: [
+        { title: "Dedicato a te", artist: "Le Vibrazioni" },
+        { title: "Tranne te", artist: "Fabri Fibra" },
+        { title: "Hanno ucciso l'Uomo Ragno", artist: "Max Pezzali" },
+        { title: "Gli anni", artist: "883" },
+        { title: "Vita spericolata", artist: "Vasco Rossi" },
+      ]
+    },
+  ]
+};
+
+const emojis = {
+  rosse: ["🍅","🌶️","🍕","🔥","🎶","👑","🌊","🍅"],
+  bianche: ["✨","😢","🎠","🌸","🇮🇹","😭","🥗"],
+  speciali: ["🎸","🐷","😤","🧀"]
+};
+const notes = ["🎵","🎶","🎸","🎤","🎹","🥁","🎺","🎻"];
+
+let currentCat = 'all';
+let currentSearch = '';
+
+function buildCards(category, items, catClass) {
+  const emojiList = emojis[category];
+  let html = '';
+  items.forEach((pizza, i) => {
+    const emoji = emojiList[i % emojiList.length];
+    const songs = pizza.songs.map((s, si) => {
+      const note = notes[si % notes.length];
+      return `<div class="song-item" onclick="copySong('${escHtml(s.title)} - ${escHtml(s.artist)}')">
+        <span class="note">${note}</span>
+        <span>${escHtml(s.title)}</span>
+        <span class="artist">${escHtml(s.artist)}</span>
+      </div>`;
+    }).join('');
+    html += `<div class="card" data-cat="${category}" data-search="${pizza.name.toLowerCase()} ${pizza.songs.map(s=>s.title+' '+s.artist).join(' ').toLowerCase()}">
+      <div class="card-header">
+        <div class="pizza-emoji">${emoji}</div>
+        <div class="card-title-wrap">
+          <div class="pizza-name">${escHtml(pizza.name)}</div>
+          <div class="pizza-desc">${escHtml(pizza.desc)}</div>
+        </div>
+      </div>
+      <div class="songs-list">${songs}</div>
+    </div>`;
+  });
+  return html;
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function render() {
+  const container = document.getElementById('main-content');
+  let html = '';
+  const sections = [
+    { key: 'rosse', label: '🍅 Pizze Rosse', catClass: 'cat-rossa' },
+    { key: 'bianche', label: '⚪ Pizze Bianche', catClass: 'cat-bianca' },
+    { key: 'speciali', label: '⭐ Speciali', catClass: 'cat-speciale' },
+  ];
+  sections.forEach(sec => {
+    if (currentCat !== 'all' && currentCat !== sec.key) return;
+    html += `<div class="section ${sec.catClass}" data-section="${sec.key}">`;
+    html += `<div class="section-title">${sec.label}</div>`;
+    html += `<div class="grid">`;
+    html += buildCards(sec.key, data[sec.key], sec.catClass);
+    html += `</div></div>`;
+  });
+  container.innerHTML = html;
+  applySearch();
+}
+
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function doSearch(val) {
+  currentSearch = val.toLowerCase().trim();
+  applySearch();
+}
+
+function applySearch() {
+  const cards = document.querySelectorAll('.card');
+  let visible = 0;
+  cards.forEach(card => {
+    const searchData = card.getAttribute('data-search') || '';
+    if (!currentSearch || searchData.includes(currentSearch)) {
+      card.style.display = '';
+      visible++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  // Hide empty sections
+  document.querySelectorAll('[data-section]').forEach(sec => {
+    const anyVisible = [...sec.querySelectorAll('.card')].some(c => c.style.display !== 'none');
+    sec.style.display = anyVisible ? '' : 'none';
+  });
+  document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
+}
+
+function copySong(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('📋 Copiato: ' + text));
+  } else {
+    showToast('🎤 ' + text);
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+render();
+</script>
+</body>
+</html>
